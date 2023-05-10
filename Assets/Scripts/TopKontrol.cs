@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 public class TopKontrol : MonoBehaviour
 {
     Rigidbody2D rb;
@@ -12,12 +13,20 @@ public class TopKontrol : MonoBehaviour
     public Color topunRengi;
     public Color turkuaz, sari, mor, pembe;
 
+    [SerializeField]
+    Text scoreText;
+
+    public static int score = 0;
+
+    public GameObject halka, renkTekeri;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
     private void Start()
     {
+        scoreText.text ="Score: "+ score;
         RastgeleRenkBelirle();
     }
     private void Update()
@@ -49,9 +58,23 @@ public class TopKontrol : MonoBehaviour
             Destroy(collision.gameObject);
             return;
         }
-        if (collision.tag != mevcutRenk)
+        if (collision.tag != mevcutRenk && collision.tag != "PuanArttirici"  && collision.tag!="RenkTekeri")
         {
+            score = 0;//Eğer can sistemi yapılacaksa burayı can sistemini ekle,can sistemi yoksa score'un static degerini kaldir.
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        if (collision.tag == "PuanArttirici")
+        {
+            score += 5;
+            scoreText.text = "Score: " + score;
+            Destroy(collision.gameObject);
+
+            Instantiate(halka, new Vector3(transform.position.x, transform.position.y + 8f,
+                transform.position.z), Quaternion.identity);
+
+            Instantiate(renkTekeri, new Vector3(transform.position.x, transform.position.y + 11f,
+                transform.position.z), Quaternion.identity);
         }
     }
 
