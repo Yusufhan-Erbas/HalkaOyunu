@@ -14,11 +14,16 @@ public class TopKontrol : MonoBehaviour
     public Color turkuaz, sari, mor, pembe;
 
     [SerializeField]
-    Text scoreText;
-
+    Text scoreText,bestScoreText;
+    [SerializeField]
+    Button startButton;
+    [SerializeField]
+    GameObject infoPanel;
     public static int score = 0;
 
     public GameObject halka, renkTekeri;
+
+    public static bool isStart = false;
 
     private void Awake()
     {
@@ -26,6 +31,7 @@ public class TopKontrol : MonoBehaviour
     }
     private void Start()
     {
+        bestScoreText.text = "BestScore:" +PlayerPrefs.GetInt("Score");
         scoreText.text ="Score: "+ score;
         RastgeleRenkBelirle();
     }
@@ -39,7 +45,16 @@ public class TopKontrol : MonoBehaviour
         {
             basildiMi = false;
         }
-    }
+		if (!isStart)
+		{
+            rb.simulated = isStart;
+			return;
+		}
+		else if (isStart)
+		{
+            rb.simulated = isStart;
+        }
+	}
 
     private void FixedUpdate()
     {
@@ -49,7 +64,7 @@ public class TopKontrol : MonoBehaviour
         }
         
     }
-
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "RenkTekeri")
@@ -61,13 +76,15 @@ public class TopKontrol : MonoBehaviour
         if (collision.tag != mevcutRenk && collision.tag != "PuanArttirici"  && collision.tag!="RenkTekeri")
         {
             score = 0;//Eğer can sistemi yapılacaksa burayı can sistemini ekle,can sistemi yoksa score'un static degerini kaldir.
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);   
         }
 
         if (collision.tag == "PuanArttirici")
         {
             score += 5;
             scoreText.text = "Score: " + score;
+            PlayerPrefs.SetInt("Score", score);//Score stored inside PlayerPrefs key Score
+            PlayerPrefs.Save();//PlayerPrefs InfoPanel'in icinde
             Destroy(collision.gameObject);
 
             Instantiate(halka, new Vector3(transform.position.x, transform.position.y + 8f,
@@ -77,8 +94,8 @@ public class TopKontrol : MonoBehaviour
                 transform.position.z), Quaternion.identity);
         }
     }
-
-    void RastgeleRenkBelirle()
+	#region RastgeleRenkBelirle
+	void RastgeleRenkBelirle()
     {
         int rastgeleSayi = Random.Range(0, 4);//0-1-2-3
         switch (rastgeleSayi)
@@ -102,4 +119,25 @@ public class TopKontrol : MonoBehaviour
         }
         GetComponent<SpriteRenderer>().color = topunRengi;
     }
+	#endregion
+
+	#region Start Game
+	public void StartGame()
+	{
+        isStart = true;
+        Destroy(startButton.gameObject);
+	}
+	#endregion
+
+	#region Info Panel Process
+	public void OpenInfoPanel()
+	{
+        infoPanel.SetActive(true);
+	}
+
+    public void CloseInfoPanel()
+	{
+        infoPanel.SetActive(false);
+	}
+	#endregion
 }//Class

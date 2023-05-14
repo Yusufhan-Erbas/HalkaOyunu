@@ -10,6 +10,7 @@ TagManager:
   - Mor
   - RenkTekeri
   - PuanArttirici
+  - InfoPanel
   layers:
   - Default
   - TransparentFX
